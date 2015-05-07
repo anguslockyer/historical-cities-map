@@ -4,6 +4,7 @@ library(dplyr)
 library(ggplot2)
 library(scales)
 library(leaflet)
+library(geojsonio)
 
 source("helpers.R")
 
@@ -39,7 +40,6 @@ shinyServer(function(input, output, session) {
     # time cities_by_year() changes, the entire map will be redrawn.
     map %>%
       draw_cities(filter(cities, year == 1790))
-
   })
 
   observe({
@@ -47,11 +47,24 @@ shinyServer(function(input, output, session) {
     if (input$place_labels) {
       map %>% addTiles(urlTemplate = mapbox_url, attribution = mapbox_attr,
                        layerId = "place-labels",
-                       tileOptions(detectRetina = FALSE,
-                                   reuseTiles = TRUE,
-                                   ))
+                       tileOptions(detectRetina = FALSE, reuseTiles = TRUE))
     } else {
      map %>% removeTiles("place-labels")
+    }
+  })
+
+  observe({
+    map <- leafletProxy("cities_map", session, deferUntilFlush = FALSE)
+    if (input$state_boundaries) {
+      date   <- as.Date(paste(input$year, 1, 1, sep = "-"))
+      if (date > as.Date("2000-12-31")) date <- as.Date("2000-01-01")
+      states <- us_boundaries(date)
+      map %>%
+        clearShapes() %>%
+        addPolygons(data = states,
+                    fill = FALSE, color = "#006d2c", weight = 1)
+    } else {
+     map %>% clearShapes()
     }
   })
 
