@@ -26,15 +26,16 @@ shinyServer(function(input, output, session) {
   })
 
   output$cities_map <- renderLeaflet({
-    leaflet() %>%
-      addProviderTiles(provider = "Esri.WorldTerrain") %>%
-      setView(lat = 37.45, lng = -93.85, zoom = 4)  #%>%
-#       addCircleMarkers(data = current_cities,
-#                        fill = FALSE, radius = ~radius_scale(population),
-#                        lng = ~lng, lat = ~lat, layerId = ~id,
-#                        popup = popup_maker(current_cities$cityst,
-#                                            current_cities$year,
-#                                            current_cities$population))
+    map <- leaflet() %>%
+            addProviderTiles(provider = "Esri.WorldTerrain") %>%
+            setView(lat = 37.45, lng = -93.85, zoom = 4)
+
+    # Initally draw the map without relying on cities_by_year(). Because if we
+    # rely on that, then Shiny will make drawing the map reactive, and every
+    # time cities_by_year() changes, the entire map will be redrawn.
+    map %>%
+      draw_cities(filter(cities, year == 1790))
+
   })
 
   observe({
@@ -48,16 +49,8 @@ shinyServer(function(input, output, session) {
   })
 
   observe({
-    current_cities <- cities_by_year()
     leafletProxy("cities_map", session, deferUntilFlush = FALSE) %>%
-      clearMarkers() %>%
-      addCircleMarkers(data = current_cities,
-                       fillColor = "white", fillOpacity = 0, weight = 2,
-                       radius = ~radius_scale(population),
-                       lng = ~lng, lat = ~lat, layerId = ~id,
-                       popup = popup_maker(current_cities$cityst,
-                                           current_cities$year,
-                                           current_cities$population))
+      draw_cities(cities_by_year())
   })
 
 })

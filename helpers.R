@@ -21,3 +21,15 @@ radius_scale <- function(x) {
 popup_maker <- function(name, year, population) {
   paste(name, year, population)
 }
+
+draw_cities <- function(map, data) {
+  map %>%
+    clearMarkers() %>%
+    addCircleMarkers(data = data,
+                       fillColor = "white", fillOpacity = 0, weight = 2,
+                       radius = ~radius_scale(population),
+                       lng = ~lng, lat = ~lat, layerId = ~id,
+                       popup = popup_maker(data$cityst,
+                                           data$year,
+                                           data$population))
+}
