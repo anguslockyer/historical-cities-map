@@ -19,7 +19,9 @@ shinyUI(
                            width = "100%", pre = "≥"),
                checkboxInput("place_labels", "Contemporary place labels?",
                              FALSE),
-               plotOutput("cities_hist", height = 200)
+               plotOutput("cities_hist", height = 200),
+               tags$p(tags$small(includeHTML("cesta_attr.html"))),
+               tags$p(tags$small(includeHTML("my_attr.html")))
                )
     )
 )
