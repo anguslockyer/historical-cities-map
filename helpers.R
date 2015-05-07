@@ -18,8 +18,10 @@ radius_scale <- function(x) {
     # see the smallest places.
 }
 
-popup_maker <- function(name, year, population) {
-  paste(name, year, population)
+popup_maker <- function(name, year, population, county) {
+  paste0("<h5>", name, "</h5>",
+         "<b>", "County: ", "</b>", county, "<br>",
+         "<b>", "Population in ", year, ": ", "</b>", comma(population))
 }
 
 draw_cities <- function(map, data) {
@@ -31,5 +33,6 @@ draw_cities <- function(map, data) {
                        lng = ~lng, lat = ~lat, layerId = ~id,
                        popup = popup_maker(data$cityst,
                                            data$year,
-                                           data$population))
+                                           data$population,
+                                           data$county))
 }
