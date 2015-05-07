@@ -9,17 +9,18 @@ shinyUI(
                leafletOutput("cities_map", width = "100%", height = "100%")
                ),
     fixedPanel(id = "controls",
-               bottom = 10, left = 50, width = 450, height = "auto",
-               h3("These are the controls"),
-               p("Aren't they great?"),
+               bottom = 10, left = 50, width = 350, height = "auto",
+               h3("Historical U.S. Cities"),
                sliderInput("year", "Year", value = 1790, sep = "",
                            min = 1790, max = 2010, step = 10,
-                           animate = TRUE, width = "100%"),
+                           width = "100%"),
+               sliderInput("min_pop", "Minimum Population", value = 0,
+                           min = 0, max = 0.5e6, step = 1e3,
+                           width = "100%", pre = "≥"),
+               checkboxInput("place_labels", "Contemporary place labels?",
+                             FALSE),
                plotOutput("cities_hist", height = 200)
                )
     )
-
-
-
 )
 

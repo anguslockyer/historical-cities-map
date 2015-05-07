@@ -3,14 +3,16 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 library(scales)
+library(leaflet)
 
-cities <- read_csv("cities.csv")
+source("helpers.R")
 
 shinyServer(function(input, output, session) {
 
   cities_by_year <- reactive({
     cities %>%
-      filter(year == input$year)
+      filter(year == input$year,
+             population >= input$min_pop)
   })
 
   output$cities_hist <- renderPlot({
@@ -25,21 +27,37 @@ shinyServer(function(input, output, session) {
 
   output$cities_map <- renderLeaflet({
     leaflet() %>%
-      addTiles() %>%
-      setView(lat = 37.45, lng = -93.85, zoom = 4) %>%
-      addCircleMarkers(data = filter(cities, year == 1790),
-                       fill = FALSE, radius = 2,
-                       lng = ~lng, lat = ~lat, layerId = ~id)
-
+      addProviderTiles(provider = "Esri.WorldTerrain") %>%
+      setView(lat = 37.45, lng = -93.85, zoom = 4)  #%>%
+#       addCircleMarkers(data = current_cities,
+#                        fill = FALSE, radius = ~radius_scale(population),
+#                        lng = ~lng, lat = ~lat, layerId = ~id,
+#                        popup = popup_maker(current_cities$cityst,
+#                                            current_cities$year,
+#                                            current_cities$population))
   })
 
   observe({
-    message(nrow(cities_by_year()))
+    map <- leafletProxy("cities_map", session, deferUntilFlush = TRUE)
+    if (input$place_labels) {
+      map %>% addTiles(urlTemplate = mapbox_url, attribution = mapbox_attr,
+                       layerId = "place-labels")
+    } else {
+     map %>% removeTiles("place-labels")
+    }
+  })
+
+  observe({
+    current_cities <- cities_by_year()
     leafletProxy("cities_map", session, deferUntilFlush = FALSE) %>%
       clearMarkers() %>%
-      addCircleMarkers(data = cities_by_year(),
-                       fill = FALSE, radius = 2,
-                       lng = ~lng, lat = ~lat, layerId = ~id)
+      addCircleMarkers(data = current_cities,
+                       fillColor = "white", fillOpacity = 0, weight = 2,
+                       radius = ~radius_scale(population),
+                       lng = ~lng, lat = ~lat, layerId = ~id,
+                       popup = popup_maker(current_cities$cityst,
+                                           current_cities$year,
+                                           current_cities$population))
   })
 
 })
