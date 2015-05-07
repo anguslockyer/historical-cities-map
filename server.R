@@ -27,7 +27,11 @@ shinyServer(function(input, output, session) {
 
   output$cities_map <- renderLeaflet({
     map <- leaflet() %>%
-            addProviderTiles(provider = "Esri.WorldTerrain") %>%
+            addProviderTiles(provider = "Esri.WorldTerrain", "terrain",
+                             providerTileOptions(detectRetina = FALSE,
+                                                 reuseTiles = TRUE,
+                                                 minZoom = 4,
+                                                 maxZoom = 12)) %>%
             setView(lat = 37.45, lng = -93.85, zoom = 4)
 
     # Initally draw the map without relying on cities_by_year(). Because if we
@@ -42,7 +46,10 @@ shinyServer(function(input, output, session) {
     map <- leafletProxy("cities_map", session, deferUntilFlush = TRUE)
     if (input$place_labels) {
       map %>% addTiles(urlTemplate = mapbox_url, attribution = mapbox_attr,
-                       layerId = "place-labels")
+                       layerId = "place-labels",
+                       tileOptions(detectRetina = FALSE,
+                                   reuseTiles = TRUE,
+                                   ))
     } else {
      map %>% removeTiles("place-labels")
     }

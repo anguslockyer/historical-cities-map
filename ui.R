@@ -9,7 +9,7 @@ shinyUI(
                leafletOutput("cities_map", width = "100%", height = "100%")
                ),
     fixedPanel(id = "controls",
-               bottom = 10, left = 50, width = 350, height = "auto",
+               bottom = 10, left = 10, width = 350, height = "auto",
                h3("Historical U.S. Cities"),
                sliderInput("year", "Year", value = 1790, sep = "",
                            min = 1790, max = 2010, step = 10,

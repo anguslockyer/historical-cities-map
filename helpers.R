@@ -28,11 +28,12 @@ draw_cities <- function(map, data) {
   map %>%
     clearMarkers() %>%
     addCircleMarkers(data = data,
-                       fillColor = "white", fillOpacity = 0, weight = 2,
-                       radius = ~radius_scale(population),
-                       lng = ~lng, lat = ~lat, layerId = ~id,
-                       popup = popup_maker(data$cityst,
-                                           data$year,
-                                           data$population,
-                                           data$county))
+                     fillColor = "white", fillOpacity = 0, weight = 2,
+                     radius = ~radius_scale(population),
+                     lng = ~lng, lat = ~lat, layerId = ~id,
+                     popup = popup_maker(data$cityst,
+                                         data$year,
+                                         data$population,
+                                         data$county),
+                     options = markerOptions(zIndexOffset = 100))
 }
