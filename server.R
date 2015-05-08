@@ -4,6 +4,7 @@ library(dplyr)
 library(ggplot2)
 library(scales)
 library(leaflet)
+library(USAboundaries)
 
 source("helpers.R")
 
